@@ -1,7 +1,7 @@
 #ADD GITHUB
 #+ Start off with one square of land with Potatoes
 #+ You can buy land
-#+ Borrow money
+#- Borrow money
 #- Harvest your potatoes.
 #- Sell potatoes(and other plants)
 #- Sell seeds
@@ -51,6 +51,7 @@ canvas = pygame.display.set_mode((1360, 660))
 pygame.display.set_caption("!Potatoes!")
 
 #Variables to setup
+farm = [[Potato()]]
 yellow = (255, 255, 0)
 
 #Errors
@@ -62,8 +63,8 @@ def main():
     money = 0
     AskDismiss = False
     AskBorrow = False
+    WeightedVal = 1/10
     borrowval = 0
-    farm = [[Potato()]]
 
 
     #Time
@@ -74,7 +75,6 @@ def main():
     borrowtime = 0
     Borrowing = False
     BorrowingMessage = False
-    LoseFarmMsg = False
     borrowedval = 0 
     interest = 10
 
@@ -85,16 +85,8 @@ def main():
         canvas.blit(BuyLand, (0, 0))
         text = font.render("$" + str(money), True, yellow, None)
         canvas.blit(text, (0, 50))
-        if time.time() - borrowtime > 720 and Borrowing:
-            farm = [[Potato()]]
-            money = 0
-            LoseFarmMsg = True
-            BorrowingMessage = False
-            AskBorrow = False
-            AskDismiss = False
-            for x in range(len(farm)):
-                for y in range(len(farm[x])):
-                    money += farm[y][x].cost
+        if time.time() - borrowtime > 1 and Borrowing:
+            print("YOU HAVE FAILED TO BE WOOFING AWESOME")
         #Event loop
         for event in pygame.event.get():
 
@@ -108,12 +100,10 @@ def main():
                 if event.key == K_d:
                     AskDismiss = False
                     BorrowingMessage = False
-                    LoseFarmMsg = False
                 if event.key == K_b:
                     AskDismiss = False
                     BorrowingMessage = False
-                    if not Borrowing:
-                        AskBorrow = True
+                    AskBorrow = True
                 if event.key == K_0:
                     if AskBorrow:
                         borrowval *= 10
@@ -157,8 +147,8 @@ def main():
                     if AskBorrow:
                         if borrowval != 0:
                             money += borrowval
-                            borrowtime = time.time()
-                            borrowedvals = borrowval
+                            borrowtimes.append(time.time())
+                            borrowedvals.append(borrowval)
                             Borrowing = True
                             BorrowingMessage = True
                             AskBorrow = False
@@ -197,11 +187,6 @@ def main():
                             if not exited:
                                 farm[-1].append(Land())
                         money -= 850
-                else:
-                    gpos = (mpos[0] / 50, mpos[1] / 50) #Grid Position
-                    if farm[gpos[1]][gpos[0]].cost != 0: #Make sure it isn't plain land for selling
-                        money += farm[gpos[1]][gpos[0]].cost
-                        farm[gpos[1]][gpos[0]] = Land()
 
         #Display loop
         for x in range(len(farm)):
@@ -227,19 +212,10 @@ def main():
             canvas.blit(text3, (50, 380))
         #A message telling that you have to return your money in a year(if you borrow)
         if BorrowingMessage:
-            text = font.render("You have one year to return your money with 10 percent interest", True, yellow, None)
+            text = font.render("You have one year to return your money with {0} percent interest".format(interest), True, yellow, None)
             text2 = font.render("Press d to dismiss", True, yellow, None)
             canvas.blit(text, (50, 330))
             canvas.blit(text2, (50, 380))
-
-        if LoseFarmMsg:
-            text = font.render("You have failed to return your money with 10 percent interest", True, yellow, None)
-            text2 = font.render("You will lose your farm and all your", True, yellow, None) 
-            text3 = font.render("Plants will be sold. Press d to dismiss.", True, yellow, None)
-            canvas.blit(text, (50, 330))
-            canvas.blit(text2, (50, 380))
-            canvas.blit(text3, (50, 420))
-
 
         #A query asking how much money the user wants to borrow
         #Update screen
