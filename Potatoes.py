@@ -2,8 +2,8 @@
 #+ Start off with one square of land with Potatoes
 #+ You can buy land
 #+ Borrow money
-#- Harvest your potatoes.
-#- Sell potatoes(and other plants)
+#+ Harvest your potatoes.
+#+ Sell potatoes(and other plants)
 #- Sell seeds
 #- And get more types of plants, such as
 #   - Cucumbers
@@ -77,6 +77,7 @@ def main():
     LoseFarmMsg = False
     borrowedval = 0 
     interest = 10
+    potatoSeeds = 0
 
     while True:
         #Basic Images that need to be placed
@@ -198,10 +199,12 @@ def main():
                                 farm[-1].append(Land())
                         money -= 850
                 else:
-                    gpos = (mpos[0] / 50, mpos[1] / 50) #Grid Position
-                    if farm[gpos[1]][gpos[0]].cost != 0: #Make sure it isn't plain land for selling
-                        money += farm[gpos[1]][gpos[0]].cost
-                        farm[gpos[1]][gpos[0]] = Land()
+                    gpos = (int(mpos[0] / 50), (int(mpos[1] / 50)) - 2) #Grid Position
+                    print (gpos)
+                    if len(farm) > gpos[0] and len(farm[gpos[0]]) > gpos[1]:
+                        if farm[gpos[0]][gpos[1]].cost != 0: #Make sure it isn't plain land for selling
+                            money += farm[gpos[1]][gpos[0]].cost
+                            farm[gpos[1]][gpos[0]] = Land()
 
         #Display loop
         for x in range(len(farm)):
