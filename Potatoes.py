@@ -4,7 +4,8 @@
 #+ Borrow money
 #+ Harvest your potatoes.
 #+ Sell potatoes(and other plants)
-#- Sell seeds
+#+ Sell seeds
+#/ Plant seeds
 #- And get more types of plants, such as
 #   - Cucumbers
 #   - Beans
@@ -35,6 +36,7 @@ class Potato(Crop):
 #Empty Land for more crops
 class Land(Crop):
     def __init__(self):
+        super().__init__()
         self.img = grass
 
 #Set up text
@@ -45,13 +47,15 @@ grass = pygame.image.load("Grass.png")
 potato = pygame.image.load("Potato.png")
 bg = pygame.image.load("Background.png")
 BuyLand = pygame.image.load("BuyLand.png")
+potatoSeed = pygame.image.load("PotatoSeed.png")
+Seed = pygame.image.load("Seed.png")
 
 #Set up canvas
 canvas = pygame.display.set_mode((1360, 660))
 pygame.display.set_caption("!Potatoes!")
 
 #Variables to setup
-yellow = (255, 255, 0)
+yellow = (200, 200, 0)
 
 #Errors
 ERR1 = "ERR1 : This feature is not available"
@@ -64,7 +68,12 @@ def main():
     AskBorrow = False
     borrowval = 0
     farm = [[Potato()]]
-
+    SellOrBuy = False
+    potatoSeeds = 0
+    PlantingMode = False
+    NumSellSeeds = False
+    sellval = 0
+    SeedSelectType = None
 
     #Time
     #2 second = one day(relatively)
@@ -77,7 +86,7 @@ def main():
     LoseFarmMsg = False
     borrowedval = 0 
     interest = 10
-    potatoSeeds = 0
+    AlreadyBorrowingMsg = False
 
     while True:
         #Basic Images that need to be placed
@@ -86,16 +95,20 @@ def main():
         canvas.blit(BuyLand, (0, 0))
         text = font.render("$" + str(money), True, yellow, None)
         canvas.blit(text, (0, 50))
-        if time.time() - borrowtime > 720 and Borrowing:
-            farm = [[Potato()]]
-            money = 0
-            LoseFarmMsg = True
-            BorrowingMessage = False
-            AskBorrow = False
-            AskDismiss = False
-            for x in range(len(farm)):
-                for y in range(len(farm[x])):
-                    money += farm[y][x].cost
+        canvas.blit(potatoSeed, (200, 0))
+        text = font.render(str(potatoSeeds), True, yellow, None)
+        canvas.blit(text, (250, 0))
+        if time.time() - borrowtime > 720:
+            if Borrowing:
+                farm = [[Potato()]]
+                money = 0
+                LoseFarmMsg = True
+                BorrowingMessage = False
+                AskBorrow = False
+                AskDismiss = False
+                for x in range(len(farm)):
+                    for y in range(len(farm[x])):
+                        money += farm[y][x].cost
         #Event loop
         for event in pygame.event.get():
 
@@ -110,50 +123,90 @@ def main():
                     AskDismiss = False
                     BorrowingMessage = False
                     LoseFarmMsg = False
+                    AlreadyBorrowingMsg = False
                 if event.key == K_b:
                     AskDismiss = False
                     BorrowingMessage = False
                     if not Borrowing:
                         AskBorrow = True
+                        AlreadyBorrowingMsg = False
+                    else:
+                        AlreadyBorrowingMsg = True
+                        AskBorrow = False
+                if event.key == K_s:
+                    PlantingMode = False
+                    NumSellSeeds = True
+                if event.key == K_p:
+                    PlantingMode = True
+                    NumSellSeeds = False
                 if event.key == K_0:
                     if AskBorrow:
                         borrowval *= 10
+                    if NumSellSeeds:
+                        sellseeds *= 10
                 if event.key == K_1:
                     if AskBorrow:
                         borrowval *= 10
                         borrowval += 1
+                    if NumSellSeeds:
+                        sellseeds *= 10
+                        sellseeds += 1
                 if event.key == K_2:
                     if AskBorrow:
                         borrowval *= 10
                         borrowval += 2
+                    if NumSellSeeds:
+                        sellseeds *= 10
+                        sellseeds += 2
                 if event.key == K_3:
                     if AskBorrow:
                         borrowval *= 10
                         borrowval += 3
+                    if NumSellSeeds:
+                        sellseeds *= 10
+                        sellseeds += 3
                 if event.key == K_4:
                     if AskBorrow:
                         borrowval *= 10
                         borrowval += 4
+                    if NumSellSeeds:
+                        sellseeds *= 10
+                        sellseeds += 4
                 if event.key == K_5:
                     if AskBorrow:
                         borrowval *= 10
                         borrowval += 5
+                    if NumSellSeeds:
+                        sellseeds *= 10
+                        sellseeds += 5
                 if event.key == K_6:
                     if AskBorrow:
                         borrowval *= 10
                         borrowval += 6
+                    if NumSellSeeds:
+                        sellseeds *= 10
+                        sellseeds += 1
                 if event.key == K_7:
                     if AskBorrow:
                         borrowval *= 10
                         borrowval += 7
+                    if NumSellSeeds:
+                        sellseeds *= 10
+                        sellseeds += 1
                 if event.key == K_8:
                     if AskBorrow:
                         borrowval *= 10
                         borrowval += 8
+                    if NumSellSeeds:
+                        sellseeds *= 10
+                        sellseeds += 1
                 if event.key == K_9:
                     if AskBorrow:
                         borrowval *= 10
                         borrowval += 9
+                    if NumSellSeeds:
+                        sellseeds *= 10
+                        sellseeds += 1
                 if event.key == K_RETURN:
                     if AskBorrow:
                         if borrowval != 0:
@@ -164,18 +217,34 @@ def main():
                             BorrowingMessage = True
                             AskBorrow = False
                             AskDismiss = False
+                            AlreadyBorrowingMsg = False
                             WeightedVal = 1/10
                             borrowval = 0
                         else:
                             BorrowingMessage = False
                             AskBorrow = False
                             AskDismiss = False
+                            AlreadyBorrowingMsg = False
                             borrowval = 0
                             WeightedVal = 1/10
+                    if NumSellSeeds:
+                        if sellseeds != 0:
+                            money += 0.25 * sellseeds
+                            potatoSeeds -= sellseeds
+                            sellseeds = 0
+                        AskBorrow = False
+                        AskDismiss = False
+                        Borrowing = False
+                        BorrowingMessage = False
+                        AlreadyBorrowingMsg = False
+                            
+                            
                 if event.key == K_q:
                     if AskBorrow:
                         AskBorrow = False
                         borrowval = 0
+                    if SellOrBuy:
+                        SellOrBuy = False
 
             #If the user presses the mouse
             if event.type == MOUSEBUTTONDOWN:
@@ -198,12 +267,18 @@ def main():
                             if not exited:
                                 farm[-1].append(Land())
                         money -= 850
+                elif pygame.Rect(200, 0, 50, 50).collidepoint(mpos) and potatoSeeds != 0:
+                    SellOrBuy = True
+                    SeedSelectType = "Potato"
+
                 else:
                     gpos = (int(mpos[0] / 50), (int(mpos[1] / 50)) - 2) #Grid Position
                     print (gpos)
                     if len(farm) > gpos[0] and len(farm[gpos[0]]) > gpos[1]:
                         if farm[gpos[0]][gpos[1]].cost != 0: #Make sure it isn't plain land for selling
                             money += farm[gpos[1]][gpos[0]].cost
+                            if farm[gpos[1]][gpos[0]].img == potato:
+                                potatoSeeds += farm[gpos[0]][gpos[1]].seeds
                             farm[gpos[1]][gpos[0]] = Land()
 
         #Display loop
@@ -243,6 +318,22 @@ def main():
             canvas.blit(text2, (50, 380))
             canvas.blit(text3, (50, 420))
 
+        if AlreadyBorrowingMsg:
+            text = font.render("You are already borrowing money. Therefore, you cannot borrow more money", True, yellow, None)
+            text2 = font.render("Press d to dismiss", True, yellow, None)
+            canvas.blit(text, (50, 330))
+            canvas.blit(text2, (50, 380))
+        if SellOrBuy:
+            text = font.render("Would you like to sell, or plant these seeds?", True, yellow, None)
+            text2 = font.render("Press s to sell, p to plant, or q to quit this message ", True, yellow, None)
+
+        if NumSellSeeds:
+            text = font.render("How many seeds would you like to sell?", True, yellow, None)
+            text2 = font.render("___________________________________________", True, yellow, None)
+            text3 = font.render(str(sellval), True, yellow, None)
+            canvas.blit(text, (50, 330))
+            canvas.blit(text2, (50, 380))
+            canvas.blit(text3, (50, 380))
 
         #A query asking how much money the user wants to borrow
         #Update screen
