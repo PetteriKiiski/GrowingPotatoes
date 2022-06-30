@@ -239,7 +239,6 @@ def main():
                                 money += 0.25 * potatoSeeds
                                 potatoSeeds = 0
                                 sellseeds = 0
-                        NumSellSeeds = False
                         AskBorrow = False
                         AskDismiss = False
                         Borrowing = False
