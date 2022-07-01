@@ -6,12 +6,16 @@
 #+ Sell potatoes(and other plants)
 #+ Sell seeds
 #/ Plant seeds
+#- Return Money
 #- And get more types of plants, such as
 #   - Cucumbers
 #   - Beans
 #   - Tomatoes
 #   - Zucchini
 #- These plants give:(items)
+
+#IDEAS
+#- Research Potatoes
 
 import pygame, sys, time
 from pygame.locals import *
@@ -68,9 +72,9 @@ def main():
     AskBorrow = False
     borrowval = 0
     farm = [[Potato()]]
+    GrowingPotatoes = []
     SellOrBuy = False
     potatoSeeds = 0
-    PlantingMode = False
     NumSellSeeds = False
     sellseeds = 0
     SeedSelectType = None
@@ -281,19 +285,41 @@ def main():
 
                 else:
                     gpos = (int(mpos[0] / 50), (int(mpos[1] / 50)) - 2) #Grid Position
-                    print (gpos)
                     if len(farm) > gpos[0] and len(farm[gpos[0]]) > gpos[1]:
+                        OccupiedLand = False
+                        for land in GrowingPotatoes:
+                            print (land[2])
+                            print ([gpos[0], gpos[1]])
+                            if land[2] == [gpos[0], gpos[1]]:
+                                print ("Yippee")
+                                OccupiedLand = True
+                        if len(GrowingPotatoes) == 0:
+                            OccupiedLand = False
                         if farm[gpos[0]][gpos[1]].cost != 0: #Make sure it isn't plain land for selling
                             money += farm[gpos[1]][gpos[0]].cost
                             if farm[gpos[1]][gpos[0]].img == potato:
                                 potatoSeeds += farm[gpos[0]][gpos[1]].seeds
                             farm[gpos[1]][gpos[0]] = Land()
 
+                        elif SeedSelectType != None and not OccupiedLand:
+                            print ("This is weeeeeeird")
+                            GrowingPotatoes.append([Potato(), time.time(), [gpos[:][0], gpos[:][1]]])
+                            #Right now, Potato is the only vegetafruit
+                            potatoSeeds -= 1
+
         #Display loop
         for x in range(len(farm)):
             for y in range(len(farm[x])):
                 canvas.blit(grass, (x * 50, y * 50 + 100))
                 canvas.blit(farm[x][y].img, (x * 50, y * 50 + 100))
+        deleteIndexes = []
+        #Growing Loop
+        for land in range(len(GrowingPotatoes)):
+            if time.time() - GrowingPotatoes[land][1] >= 180:
+                farm[GrowingPotatoes[land][2][0]][GrowingPotatoes[land][2][1]] = GrowingPotatoes[land][0]
+                deleteIndexes.append(land)
+        for index in deleteIndexes:
+            del GrowingPotatoes[index]
 
         #A query asking whether or not the user wants to borrow money or dismiss the query
         if AskDismiss:
