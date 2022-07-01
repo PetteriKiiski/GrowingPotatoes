@@ -85,6 +85,7 @@ def main():
     #12 months = one year
     #You get one year(720 seconds) to return your money
     borrowtime = 0
+    NotEnoughMoneyMsg = False
     Borrowing = False
     BorrowingMessage = False
     LoseFarmMsg = False
@@ -110,6 +111,9 @@ def main():
                 BorrowingMessage = False
                 AskBorrow = False
                 AskDismiss = False
+                money += potatoSeeds * 0.25
+                potatoSeeds = 0
+                GrowingPotatoes = []
                 for x in range(len(farm)):
                     for y in range(len(farm[x])):
                         money += farm[y][x].cost
@@ -128,6 +132,7 @@ def main():
                     BorrowingMessage = False
                     LoseFarmMsg = False
                     AlreadyBorrowingMsg = False
+                    NotEnoughMoneyMsg = False
                 if event.key == K_b:
                     AskDismiss = False
                     BorrowingMessage = False
@@ -137,6 +142,14 @@ def main():
                     else:
                         AlreadyBorrowingMsg = True
                         AskBorrow = False
+                if event.key == K_r and Borrowing:
+                    if money >= borrowedval * 1.1:
+                        Borrowing = False
+                        AskBorrow = False
+                        AlreadyBorrowingMsg = False
+                        money -= borrowedval * 1.1
+                    else:
+                        NotEnoughMoneyMsg = True
                 if event.key == K_s:
                     PlantingMode = False
                     NumSellSeeds = True
@@ -218,7 +231,7 @@ def main():
                         if borrowval != 0:
                             money += borrowval
                             borrowtime = time.time()
-                            borrowedvals = borrowval
+                            borrowedval = borrowval
                             Borrowing = True
                             BorrowingMessage = True
                             AskBorrow = False
@@ -246,7 +259,6 @@ def main():
                         NumSellSeeds = False
                         AskBorrow = False
                         AskDismiss = False
-                        Borrowing = False
                         BorrowingMessage = False
                         AlreadyBorrowingMsg = False
                             
@@ -257,6 +269,9 @@ def main():
                         borrowval = 0
                     if SellOrBuy:
                         SellOrBuy = False
+                    if NumSellSeeds:
+                        NumSellSeeds = False
+                        sellseeds = 0
 
             #If the user presses the mouse
             if event.type == MOUSEBUTTONDOWN:
@@ -288,23 +303,20 @@ def main():
                     if len(farm) > gpos[0] and len(farm[gpos[0]]) > gpos[1]:
                         OccupiedLand = False
                         for land in GrowingPotatoes:
-                            print (land[2])
-                            print ([gpos[0], gpos[1]])
                             if land[2] == [gpos[0], gpos[1]]:
-                                print ("Yippee")
                                 OccupiedLand = True
                         if len(GrowingPotatoes) == 0:
                             OccupiedLand = False
+                        print (gpos[0], gpos[1])
                         if farm[gpos[0]][gpos[1]].cost != 0: #Make sure it isn't plain land for selling
-                            money += farm[gpos[1]][gpos[0]].cost
-                            if farm[gpos[1]][gpos[0]].img == potato:
+                            money += farm[gpos[0]][gpos[1]].cost
+                            if farm[gpos[0]][gpos[1]].img == potato:
                                 potatoSeeds += farm[gpos[0]][gpos[1]].seeds
-                            farm[gpos[1]][gpos[0]] = Land()
+                            farm[gpos[0]][gpos[1]] = Land()
 
                         elif SeedSelectType != None and not OccupiedLand:
-                            print ("This is weeeeeeird")
                             GrowingPotatoes.append([Potato(), time.time(), [gpos[:][0], gpos[:][1]]])
-                            #Right now, Potato is the only vegetafruit
+                            #Right now, Potato is the only vegetable
                             potatoSeeds -= 1
 
         #Display loop
@@ -315,7 +327,7 @@ def main():
         deleteIndexes = []
         #Growing Loop
         for land in range(len(GrowingPotatoes)):
-            if time.time() - GrowingPotatoes[land][1] >= 180:
+            if time.time() - GrowingPotatoes[land][1] >= 60:
                 farm[GrowingPotatoes[land][2][0]][GrowingPotatoes[land][2][1]] = GrowingPotatoes[land][0]
                 deleteIndexes.append(land)
         for index in deleteIndexes:
@@ -370,6 +382,12 @@ def main():
             canvas.blit(text, (50, 330))
             canvas.blit(text2, (50, 380))
             canvas.blit(text3, (50, 380))
+
+        if NotEnoughMoneyMsg:
+            text = font.render("You do not have enough money to return this money.", True, yellow, None)
+            text2 = font.render("You must earn more money. Press d to dismiss", True, yellow, None)
+            canvas.blit(text, (50, 330))
+            canvas.blit(text2, (50, 380))
 
         #A query asking how much money the user wants to borrow
         #Update screen
