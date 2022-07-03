@@ -1,22 +1,3 @@
-#ADD GITHUB
-#+ Start off with one square of land with Potatoes
-#+ You can buy land
-#+ Borrow money
-#+ Harvest your potatoes.
-#+ Sell potatoes(and other plants)
-#+ Sell seeds
-#/ Plant seeds
-#- Return Money
-#- And get more types of plants, such as
-#   - Cucumbers
-#   - Beans
-#   - Tomatoes
-#   - Zucchini
-#- These plants give:(items)
-
-#IDEAS
-#- Research Potatoes
-
 import pygame, sys, time
 from pygame.locals import *
 pygame.init()
@@ -77,7 +58,7 @@ def main():
     potatoSeeds = 0
     NumSellSeeds = False
     sellseeds = 0
-    SeedSelectType = None
+    SeedSelectType = Potato()
 
     #Time
     #2 second = one day(relatively)
@@ -296,8 +277,7 @@ def main():
                         money -= 850
                 elif pygame.Rect(200, 0, 50, 50).collidepoint(mpos) and potatoSeeds != 0:
                     SellOrBuy = True
-                    SeedSelectType = "Potato"
-
+                    SeedSelectType = Potato()
                 else:
                     gpos = (int(mpos[0] / 50), (int(mpos[1] / 50)) - 2) #Grid Position
                     if len(farm) > gpos[0] and len(farm[gpos[0]]) > gpos[1]:
@@ -307,14 +287,12 @@ def main():
                                 OccupiedLand = True
                         if len(GrowingPotatoes) == 0:
                             OccupiedLand = False
-                        print (gpos[0], gpos[1])
                         if farm[gpos[0]][gpos[1]].cost != 0: #Make sure it isn't plain land for selling
                             money += farm[gpos[0]][gpos[1]].cost
                             if farm[gpos[0]][gpos[1]].img == potato:
                                 potatoSeeds += farm[gpos[0]][gpos[1]].seeds
                             farm[gpos[0]][gpos[1]] = Land()
-
-                        elif SeedSelectType != None and not OccupiedLand:
+                        elif not OccupiedLand and potatoSeeds > 0:
                             GrowingPotatoes.append([Potato(), time.time(), [gpos[:][0], gpos[:][1]]])
                             #Right now, Potato is the only vegetable
                             potatoSeeds -= 1
