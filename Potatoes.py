@@ -14,7 +14,7 @@ class Crop:
 class Potato(Crop):
     def __init__(self):
         self.cost = 0.75
-        self.seeds = 300
+        self.seeds = 10
         self.newplants = 5
         self.img = potato
 
@@ -92,7 +92,7 @@ def main():
                 BorrowingMessage = False
                 AskBorrow = False
                 AskDismiss = False
-                money += potatoSeeds * 0.03
+                money += potatoSeeds * 0.25
                 potatoSeeds = 0
                 GrowingPotatoes = []
                 for x in range(len(farm)):
@@ -230,11 +230,11 @@ def main():
                     if NumSellSeeds:
                         if sellseeds != 0:
                             if sellseeds <= potatoSeeds:
-                                money += 0.03 * sellseeds
+                                money += 0.25 * sellseeds
                                 potatoSeeds -= sellseeds
                                 sellseeds = 0
                             else:
-                                money += 0.03 * potatoSeeds
+                                money += 0.25 * potatoSeeds
                                 potatoSeeds -= potatoSeeds
                                 sellseeds = 0
                         NumSellSeeds = False
@@ -260,7 +260,7 @@ def main():
 
                 #User wants to buy land
                 if pygame.Rect(0, 0, 200, 50).collidepoint(mpos):
-                    if money < 850:
+                    if money < 1:
                         AskDismiss = True
                     else:
                         if len(farm) < 27:
@@ -274,7 +274,7 @@ def main():
                                     break
                             if not exited:
                                 farm[-1].append(Land())
-                        money -= 850
+                        money -= 1
                 elif pygame.Rect(200, 0, 50, 50).collidepoint(mpos) and potatoSeeds != 0:
                     SellOrBuy = True
                     SeedSelectType = Potato()
