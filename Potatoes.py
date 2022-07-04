@@ -92,7 +92,7 @@ def main():
                 BorrowingMessage = False
                 AskBorrow = False
                 AskDismiss = False
-                money += potatoSeeds * 0.25
+                money += potatoSeeds * 0.03
                 potatoSeeds = 0
                 GrowingPotatoes = []
                 for x in range(len(farm)):
@@ -230,12 +230,12 @@ def main():
                     if NumSellSeeds:
                         if sellseeds != 0:
                             if sellseeds <= potatoSeeds:
-                                money += 0.25 * sellseeds
+                                money += 0.03 * sellseeds
                                 potatoSeeds -= sellseeds
                                 sellseeds = 0
                             else:
-                                money += 0.25 * potatoSeeds
-                                potatoSeeds = 0
+                                money += 0.03 * potatoSeeds
+                                potatoSeeds -= potatoSeeds
                                 sellseeds = 0
                         NumSellSeeds = False
                         AskBorrow = False

@@ -1,14 +1,14 @@
--------------Version 1.0-----------------------
-Base Game
--------------Version 1.1-----------------------
-Bug fixes
--------------Version 2.0-----------------------
-Seasons:Winter has snow, you must dig up. Some plants grow better in some seasons. Add this after research
-Research:Plants may grow better in certain conditions, so you can spend money to research plants
-Reputation:Have a good reputation might make some plants easier to be sold.
-More Plants: get more plants. You can buy more types of seeds from the store
-Make Seeds Cheap:Maybe every 100 seeds is worth 25 cent
-Don't have a grow or plant question: Just have s to sell seeds, and click to pla
-nt. You can change this with the new updates
--------------Version 3.0-----------------------
-Interact:(Late game feature)Can interact with other people to possibly get more seeds in different ways.
+-------------Version 1.0.0-----------------------
+Base Game :)
+-------------Version 1.0.1-----------------------
+Minor Bug fixes :)
+-------------Version 1.1.0-----------------------
+Make Seeds Cheap:Maybe every 100 seeds is worth 25 cent :|
+-------------Version 2.0.0-----------------------
+Seasons:Winter has snow, you must dig up. Some plants grow better in some seasons. Add this after research :(
+-------------Version 3.0.0-----------------------
+More Plants: get more plants. You can buy more types of seeds from the store :(
+-------------Version 4.0.0-----------------------
+Research:Plants may grow better in certain conditions, so you can spend money to research plants :(
+-------------Version 5.0.0-----------------------
+Interact:(Late game feature)Can interact with other people to possibly get more seeds in different ways. :(
