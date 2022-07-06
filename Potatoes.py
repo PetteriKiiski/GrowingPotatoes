@@ -65,6 +65,12 @@ class Seeds:
                 Bean():self.beanSeeds, 
                 Tomato():self.tomatoSeeds, 
                 Cucumber():self.cucumberSeeds, 
+                Zuchinni():self.zuchinniSeeds}
+    def update(self):
+        self.typeDict = {Potato():self.potatoSeeds, 
+                Bean():self.beanSeeds, 
+                Tomato():self.tomatoSeeds, 
+                Cucumber():self.cucumberSeeds, 
                 Zuchinni:self.zuchinniSeeds}
     def add_seeds (self, Type, added):
         if Type == Potato():
@@ -78,6 +84,7 @@ class Seeds:
         if Type == Zuchinni():
             self.zuchinniSeeds += added
     def get_type (self, Type):
+        self.update()
         for plant in self.typeDict.keys():
             if plant == Type:
                 return self.typeDict[plant]
@@ -336,6 +343,7 @@ def main():
                                 seeds.add_seeds(SeedSelectType, -sellseeds)
                                 sellseeds = 0
                             else:
+                                print (-seeds.get_type(SeedSelectType))
                                 money += 0.25 * seeds.get_type(SeedSelectType)
                                 seeds.add_seeds(SeedSelectType, -seeds.get_type(SeedSelectType))
                                 sellseeds = 0
