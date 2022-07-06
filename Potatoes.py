@@ -7,16 +7,81 @@ class Crop:
     def __init__(self):
         self.cost = 0.00
         self.seeds = 0
-        self.newplants = 0
         self.img = None
+    def __eq__(self, other):
+        if self.img == other.img:
+            return True
+        return False
 
 #Plant for the potato
 class Potato(Crop):
     def __init__(self):
         self.cost = 0.75
         self.seeds = 10
-        self.newplants = 5
         self.img = potato
+    def __hash__(self):
+        return 0
+
+class Cucumber(Crop):
+    def __init__(self):
+        self.cost = 0.42
+        self.seeds = 15
+        self.img = cucumber
+    def __hash__(self):
+        return 1
+
+class Bean(Crop):
+    def __init__(self):
+        self.cost = 0.75
+        self.seeds = 35
+        self.img = bean
+    def __hash__(self):
+        return 2
+
+class Tomato(Crop):
+    def __init__(self):
+        self.cost = 1.03
+        self.seeds = 110
+        self.img = tomato
+    def __hash__(self):
+        return 3
+
+class Zuchinni(Crop):
+    def __init__(self):
+        self.cost = 1.20
+        self.seeds = 44
+        self.img = zuchinni
+    def __hash__(self):
+        return 4
+
+class Seeds:
+    def __init__(self):
+        self.potatoSeeds = 0
+        self.beanSeeds = 0
+        self.tomatoSeeds = 0
+        self.cucumberSeeds = 0
+        self.zuchinniSeeds = 0
+        self.typeDict = {Potato():self.potatoSeeds, 
+                Bean():self.beanSeeds, 
+                Tomato():self.tomatoSeeds, 
+                Cucumber():self.cucumberSeeds, 
+                Zuchinni:self.zuchinniSeeds}
+    def add_seeds (self, Type, added):
+        if Type == Potato():
+            self.potatoSeeds += added
+        if Type == Bean():
+            self.beanSeeds += added
+        if Type == Tomato():
+            self.tomatoSeeds += added
+        if Type == Cucumber():
+            self.cucumberSeeds += added
+        if Type == Zuchinni():
+            self.zuchinniSeeds += added
+    def get_type (self, Type):
+        for plant in self.typeDict.keys():
+            if plant == Type:
+                return self.typeDict[plant]
+        return False
 
 #Empty Land for more crops
 class Land(Crop):
@@ -30,10 +95,21 @@ font = pygame.font.Font(None, 50)
 #Load images
 grass = pygame.image.load("Grass.png")
 potato = pygame.image.load("Potato.png")
+bean = pygame.image.load("Bean.png")
+tomato = pygame.image.load("Tomato.png")
+cucumber = pygame.image.load("Cucumber.png")
+zuchinni = pygame.image.load("Zuchinni.png")
 bg = pygame.image.load("Background.png")
 BuyLand = pygame.image.load("BuyLand.png")
 potatoSeed = pygame.image.load("PotatoSeed.png")
+beanSeed = pygame.image.load("BeanSeed.png")
+tomatoSeed = pygame.image.load("TomatoSeed.png")
+cucumberSeed = pygame.image.load("CucumberSeed.png")
+zuchinniSeed = pygame.image.load("ZuchinniSeed.png")
 Seed = pygame.image.load("Seed.png")
+store = pygame.image.load("Store.png")
+ShopTemplate = pygame.image.load("ShopTemplate.png")
+ShopLayer = pygame.image.load("ShopLayer.png")
 
 #Set up canvas
 canvas = pygame.display.set_mode((1360, 660))
@@ -55,10 +131,11 @@ def main():
     farm = [[Potato()]]
     GrowingPotatoes = []
     SellOrBuy = False
-    potatoSeeds = 0
+    seeds = Seeds()
     NumSellSeeds = False
     sellseeds = 0
     SeedSelectType = Potato()
+    Storemode = False
 
     #Time
     #2 second = one day(relatively)
@@ -81,9 +158,30 @@ def main():
         canvas.blit(BuyLand, (0, 0))
         text = font.render("$" + str(money), True, yellow, None)
         canvas.blit(text, (0, 50))
+        canvas.blit(store, (1060, 0))
         canvas.blit(potatoSeed, (200, 0))
-        text = font.render(str(potatoSeeds), True, yellow, None)
-        canvas.blit(text, (250, 0))
+        canvas.blit(beanSeed, (350, 0))
+        canvas.blit(tomatoSeed, (500, 0))
+        canvas.blit(cucumberSeed, (650, 0))
+        canvas.blit(zuchinniSeed, (800, 0))
+        if Storemode:
+            canvas.blit(ShopLayer, (600, 330))
+            canvas.blit(potatoSeed, (605, 335))
+            canvas.blit(beanSeed, (655, 335))
+            canvas.blit(tomatoSeed, (705, 335))
+            canvas.blit(cucumberSeed, (605, 390))
+            canvas.blit(zuchinniSeed, (655, 390))
+            canvas.blit(ShopTemplate, (600, 330))
+        potatotext = font.render(str(seeds.potatoSeeds), True, yellow, None)
+        beantext = font.render(str(seeds.beanSeeds), True, yellow, None)
+        tomatotext = font.render(str(seeds.tomatoSeeds), True, yellow, None)
+        cucumbertext = font.render(str(seeds.cucumberSeeds), True, yellow, None)
+        zuchinnitext = font.render(str(seeds.zuchinniSeeds), True, yellow, None)
+        canvas.blit(potatotext, (250, 0))
+        canvas.blit(beantext, (400, 0))
+        canvas.blit(tomatotext, (550, 0))
+        canvas.blit(cucumbertext, (700, 0))
+        canvas.blit(zuchinnitext, (850, 0))
         if time.time() - borrowtime > 720:
             if Borrowing:
                 farm = [[Potato()]]
@@ -92,8 +190,12 @@ def main():
                 BorrowingMessage = False
                 AskBorrow = False
                 AskDismiss = False
-                money += potatoSeeds * 0.25
-                potatoSeeds = 0
+                money += (seeds.potatoSeeds + seeds.beanSeeds + seeds.tomatoSeeds + seeds.cucumberSeeds + seeds.zuchinniSeeds) * 0.25
+                seeds.potatoSeeds = 0
+                seeds.beanSeeds = 0
+                seeds.tomatoSeeds = 0
+                seeds.cucumberSeeds = 0
+                seeds.zuchinni = 0
                 GrowingPotatoes = []
                 for x in range(len(farm)):
                     for y in range(len(farm[x])):
@@ -229,13 +331,13 @@ def main():
                             WeightedVal = 1/10
                     if NumSellSeeds:
                         if sellseeds != 0:
-                            if sellseeds <= potatoSeeds:
+                            if sellseeds <= seeds.get_type(SeedSelectType):
                                 money += 0.25 * sellseeds
-                                potatoSeeds -= sellseeds
+                                seeds.add_seeds(SeedSelectType, -sellseeds)
                                 sellseeds = 0
                             else:
-                                money += 0.25 * potatoSeeds
-                                potatoSeeds -= potatoSeeds
+                                money += 0.25 * seeds.get_type(SeedSelectType)
+                                seeds.add_seeds(SeedSelectType, -seeds.get_type(SeedSelectType))
                                 sellseeds = 0
                         NumSellSeeds = False
                         AskBorrow = False
@@ -275,9 +377,44 @@ def main():
                             if not exited:
                                 farm[-1].append(Land())
                         money -= 1
-                elif pygame.Rect(200, 0, 50, 50).collidepoint(mpos) and potatoSeeds != 0:
+                elif pygame.Rect(1060, 0, 300, 100).collidepoint(mpos):
+                    Storemode = not Storemode
+                elif pygame.Rect(200, 0, 50, 50).collidepoint(mpos) and seeds.potatoSeeds != 0:
                     SellOrBuy = True
                     SeedSelectType = Potato()
+                elif pygame.Rect(350, 0, 50, 50).collidepoint(mpos) and seeds.beanSeeds != 0:
+                    SellOrBuy = True
+                    SeedSelectType = Bean()
+                elif pygame.Rect(500, 0, 50, 50).collidepoint(mpos) and seeds.tomatoSeeds != 0:
+                    SellOrBuy = True
+                    SeedSelectType = Tomato()
+                elif pygame.Rect(650, 0, 50, 50).collidepoint(mpos) and seeds.cucumberSeeds != 0:
+                    SellOrBuy = True
+                    SeedSelectType = Cucumber()
+                elif pygame.Rect(800, 0, 50, 50).collidepoint(mpos) and seeds.zuchinniSeeds != 0:
+                    SellOrBuy = True
+                    SeedSelectType = Zuchinni()
+                elif Storemode:
+                    #canvas.blit(potatoSeed, (605, 335))
+                    #canvas.blit(beanSeed, (655, 335))
+                    #canvas.blit(tomatoSeed, (705, 335))
+                    #canvas.blit(cucumberSeed, (605, 390))
+                    #canvas.blit(zuchinniSeed, (655, 390))
+                    if pygame.Rect(40, 40, 605, 335).collidepoint(mpos) and money >= 1:
+                        seeds.potatoSeeds += 1
+                        money -= 1
+                    if pygame.Rect(40, 40, 655, 335).collidepoint(mpos) and money >= 3000:
+                        seeds.beanSeeds += 1
+                        money -= 3000
+                    if pygame.Rect(40, 40, 705, 335).collidepoint(mpos) and money >= 3000:
+                        seeds.tomatoSeeds += 1
+                        money -= 3000
+                    if pygame.Rect(40, 40, 605, 390).collidepoint(mpos) and money >= 3000:
+                        seeds.cucumberSeeds += 1
+                        money -= 3000
+                    if pygame.Rect(40, 40, 655, 390).collidepoint(mpos) and money >= 3000:
+                        seeds.zuchinniSeeds += 1
+                        money -= 3000 
                 else:
                     gpos = (int(mpos[0] / 50), (int(mpos[1] / 50)) - 2) #Grid Position
                     if len(farm) > gpos[0] and len(farm[gpos[0]]) > gpos[1]:
@@ -289,13 +426,13 @@ def main():
                             OccupiedLand = False
                         if farm[gpos[0]][gpos[1]].cost != 0: #Make sure it isn't plain land for selling
                             money += farm[gpos[0]][gpos[1]].cost
-                            if farm[gpos[0]][gpos[1]].img == potato:
-                                potatoSeeds += farm[gpos[0]][gpos[1]].seeds
+                            if farm[gpos[0]][gpos[1]].img != None:
+                                seeds.add_seeds(farm[gpos[0]][gpos[1]], farm[gpos[0]][gpos[1]].seeds)
                             farm[gpos[0]][gpos[1]] = Land()
-                        elif not OccupiedLand and potatoSeeds > 0:
-                            GrowingPotatoes.append([Potato(), time.time(), [gpos[:][0], gpos[:][1]]])
+                        elif not OccupiedLand and seeds.get_type(SeedSelectType) > 0:
+                            GrowingPotatoes.append([SeedSelectType, time.time(), [gpos[:][0], gpos[:][1]]])
                             #Right now, Potato is the only vegetable
-                            potatoSeeds -= 1
+                            seeds.add_seeds(SeedSelectType, -1)
 
         #Display loop
         for x in range(len(farm)):
@@ -345,6 +482,7 @@ def main():
         if AlreadyBorrowingMsg:
             text = font.render("You are already borrowing money. Therefore, you cannot borrow more money", True, yellow, None)
             text2 = font.render("Press d to dismiss", True, yellow, None)
+            canvas.blit(text, (50, 330))
             canvas.blit(text, (50, 330))
             canvas.blit(text2, (50, 380))
         if SellOrBuy:

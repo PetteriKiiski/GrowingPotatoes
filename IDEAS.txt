@@ -11,9 +11,9 @@ Change amount of seeds produced per potato :)
 -------------Version 1.1.3-----------------------
 Change Cost of land :)
 -------------Version 2.0.0-----------------------
-Seasons:Winter has snow, you must dig up. Some plants grow better in some seasons. Add this after research :(
--------------Version 3.0.0-----------------------
 More Plants: get more plants. You can buy more types of seeds from the store :(
+-------------Version 3.0.0-----------------------
+Seasons:Winter has snow, you must dig up. Some plants grow better in some seasons. Add this after research :(
 -------------Version 4.0.0-----------------------
 Research:Plants may grow better in certain conditions, so you can spend money to research plants :(
 -------------Version 5.0.0-----------------------
